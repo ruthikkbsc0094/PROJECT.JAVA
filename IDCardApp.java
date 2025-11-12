@@ -158,5 +158,85 @@ public class IDCardApp extends JFrame {
         }
     }
 
-    
+    // LOGIN WINDOW
+    private boolean showLoginDialog() {
+        JDialog dialog = new JDialog(this, "Login", true);
+        dialog.setSize(350, 200);
+        dialog.setLayout(new GridBagLayout());
+        dialog.setLocationRelativeTo(null);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(5, 5, 5, 5);
+        c.anchor = GridBagConstraints.WEST;
+
+        JTextField tfUser = new JTextField(15);
+        JPasswordField pfPass = new JPasswordField(15);
+        JButton loginBtn = new JButton("Login");
+
+        c.gridx = 0; c.gridy = 0; dialog.add(new JLabel("Username:"), c);
+        c.gridx = 1; dialog.add(tfUser, c);
+        c.gridx = 0; c.gridy = 1; dialog.add(new JLabel("Password:"), c);
+        c.gridx = 1; dialog.add(pfPass, c);
+
+        c.gridx = 1; c.gridy = 2;
+        dialog.add(loginBtn, c);
+
+        loginBtn.addActionListener(e -> {
+            if (tfUser.getText().trim().equals(ADMIN_USER)
+                    && new String(pfPass.getPassword()).equals(ADMIN_PASS)) {
+                dialog.dispose();
+            } else {
+                JOptionPane.showMessageDialog(dialog, "Invalid credentials!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        dialog.setVisible(true);
+        return true;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            IDCardApp app = new IDCardApp();
+            boolean ok = app.showLoginDialog();
+            if (ok) app.setVisible(true);
+        });
+    }
+
+    static class User {
+        String name, id, dept, program, address, birthday, valid;
+        User(String name, String id, String dept, String program, String address, String birthday, String valid) {
+            this.name = name;
+            this.id = id;
+            this.dept = dept;
+            this.program = program;
+            this.address = address;
+            this.birthday = birthday;
+            this.valid = valid;
+        }
+    }
+
+    class IDPreviewPanel extends JPanel {
+        private User user;
+        private BufferedImage photo;
+
+        IDPreviewPanel() {
+            setBackground(Color.white);
+            setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        }
+
+        public void setUser(User u) { this.user = u; }
+        public void setPhoto(BufferedImage p) { this.photo = p; }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            BufferedImage id = renderToImage();
+            if (id != null) {
+                int x = (getWidth() - id.getWidth()) / 2;
+                int y = (getHeight() - id.getHeight()) / 2;
+                g.drawImage(id, x, y, null);
+            }
+        }
+
+
 
