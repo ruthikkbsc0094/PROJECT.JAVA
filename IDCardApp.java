@@ -238,6 +238,77 @@ public class IDCardApp extends JFrame {
             }
         }
 
+public BufferedImage renderToImage() {
+            final int w = 390, h = 260;
+            BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = img.createGraphics();
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            g.setColor(new Color(245, 245, 250));
+            g.fill(new RoundRectangle2D.Double(0, 0, w, h, 12, 12));
+            g.setColor(Color.DARK_GRAY);
+            g.draw(new RoundRectangle2D.Double(0, 0, w - 1, h - 1, 12, 12));
+
+            g.setColor(new Color(25, 90, 140));
+            g.fillRect(0, 0, w, 44);
+
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 16));
+            g.drawString("RV University", 12, 28);
+
+            int px = 12, py = 60, pw = 120, ph = 150;
+            g.setColor(Color.WHITE);
+            g.fillRect(px - 2, py - 2, pw + 4, ph + 4);
+            g.setColor(Color.GRAY);
+            g.drawRect(px - 2, py - 2, pw + 4, ph + 4);
+
+            if (photo != null) {
+                BufferedImage scaled = scaleToFit(photo, pw, ph);
+                g.drawImage(scaled, px, py, null);
+            } else {
+                g.setColor(Color.LIGHT_GRAY);
+                g.fillRect(px, py, pw, ph);
+                g.setColor(Color.DARK_GRAY);
+                g.drawString("No Photo", px + 28, py + ph / 2);
+            }
+
+            int tx = 150, ty = 80;
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+            g.drawString(user != null ? user.name : "<Name>", tx, ty);
+            g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+            g.drawString("ID: " + text(user != null ? user.id : ""), tx, ty + 25);
+            g.drawString("Dept: " + text(user != null ? user.dept : ""), tx, ty + 45);
+            g.drawString("Program: " + text(user != null ? user.program : ""), tx, ty + 65);
+            g.drawString("Birthday: " + text(user != null ? user.birthday : ""), tx, ty + 85);
+            g.drawString("Address: " + text(user != null ? user.address : ""), tx, ty + 105);
+            g.drawString("Valid Till: " + text(user != null ? user.valid : ""), tx, ty + 125);
+
+            g.dispose();
+            return img;
+        }
+
+        private String text(String val) {
+            return val.isEmpty() ? "<...>" : val;
+        }
+
+        private BufferedImage scaleToFit(BufferedImage src, int maxW, int maxH) {
+            double scale = Math.min((double) maxW / src.getWidth(), (double) maxH / src.getHeight());
+            if (scale >= 1.0) return src;
+            int nw = (int) (src.getWidth() * scale);
+            int nh = (int) (src.getHeight() * scale);
+            Image tmp = src.getScaledInstance(nw, nh, Image.SCALE_SMOOTH);
+            BufferedImage dimg = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = dimg.createGraphics();
+            g2d.drawImage(tmp, 0, 0, null);
+            g2d.dispose();
+            return dimg;
+        }
+    }
+}
+
 
 
 
